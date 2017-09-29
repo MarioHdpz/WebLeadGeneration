@@ -2,7 +2,6 @@ var google = require('googleapis');
 var auth = require('./auth.js');
 
 var searchconsole = google.searchconsole('v1');
-var customsearch = google.customsearch('v1');
 
 var API_KEY = auth.getApiKey();
 
@@ -13,16 +12,6 @@ var API_KEY = auth.getApiKey();
   function functionName(error,result) {
     console.log(result.mobileFriendliness);
   }  
-);*/
-
-/*customsearch.cse.list({
-    auth: API_KEY,
-    q: 'clases de inglés',
-    cx: '004560455660358991490:-iqegy_diec'
-  }, function functionName(error, result) {
-    console.log(error);
-    console.log(result.items);
-  }
 );*/
 
 var util = require("util"),
