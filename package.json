@@ -1,7 +1,7 @@
 {
-  "name": "prospection",
+  "name": "Web Lead Generation",
   "version": "1.0.0",
-  "description": "Prospeccion comercial axolosoft",
+  "description": "Lead generation for web developers",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
