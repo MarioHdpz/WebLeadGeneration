@@ -1,0 +1,14 @@
+{
+  "name": "prospection",
+  "version": "1.0.0",
+  "description": "Prospeccion comercial axolosoft",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mario HD",
+  "license": "ISC",
+  "dependencies": {
+    "googleapis": "^22.2.0"
+  }
+}

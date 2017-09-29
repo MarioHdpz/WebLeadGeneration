@@ -1,0 +1,6 @@
+var apiKey = 'Your googleapis API Key';
+module.exports = {
+  getApiKey: function () {
+    return apiKey;
+  }
+};
