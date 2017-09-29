@@ -1,45 +1,43 @@
 var google = require('googleapis');
 var auth = require('./auth.js');
-
+var crawler = require('./crawler.js');
+var _ = require('lodash');
 var searchconsole = google.searchconsole('v1');
 
 var API_KEY = auth.getApiKey();
+var urls = crawler.getAdUrls(process.argv[2]);
 
-/*searchconsole.urlTestingTools.mobileFriendlyTest.run({
-  auth: API_KEY,
-  url: 'http://www.redmaceta.com'
-},
-  function functionName(error,result) {
-    console.log(result.mobileFriendliness);
-  }  
-);*/
-
-var util = require("util"),
-    http = require("http");
-
-var options = {
-    host: "www.google.com.mx",
-    port: 80,
-    path: "/search?q=mudanzas"
-};
-
-var content = "";   
-
-var req = http.request(options, function(res) {
-    res.setEncoding("utf8");
-    res.on("data", function (chunk) {
-        content += chunk;
-    });
-
-    res.on("end", function () {
-        var fs = require('fs');
-        fs.writeFile("./test.txt", content, function(err) {
-          if(err) {
-              return console.log(err);
-          }
-          console.log("The file was saved!");
-        }); 
+urls.then(function (urls) {
+    _.forEach(urls, function(value) {
+      responsiveFilter(value).then(function (data) {
+        console.log(data);
+      });
+      wait(5000);
     });
 });
 
-req.end();
+function responsiveFilter(url) {
+  return new Promise(function(resolve, reject) {
+    searchconsole.urlTestingTools.mobileFriendlyTest.run({
+      auth: API_KEY,
+      url: 'https://' + url
+    },
+      function (error,result) {
+        if(result != null) {
+          resolve(url +' - ' + result.mobileFriendliness);
+        } else {
+          console.log(url + '- Test error: ' + error);
+        }
+      }  
+    );
+  });
+}
+
+function wait(ms){
+   var start = new Date().getTime();
+   var end = start;
+   while(end < start + ms) {
+     end = new Date().getTime();
+  }
+}
+
