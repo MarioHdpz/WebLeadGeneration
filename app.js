@@ -3,16 +3,18 @@ var auth = require('./auth.js');
 var crawler = require('./crawler.js');
 var _ = require('lodash');
 var searchconsole = google.searchconsole('v1');
+var http = require("http");
 
 var API_KEY = auth.getApiKey();
-var urls = crawler.getAdUrls(process.argv[2]);
+//var urls = crawler.getAdUrls(process.argv[2]);
+var urls = crawler.getAdUrls('payasos');
 
 urls.then(function (urls) {
     _.forEach(urls, function(value) {
-      responsiveFilter(value).then(function (data) {
+      checkResponsiveness(value).then(function (data) {
         console.log(data);
       });
-      wait(5000);
+      //wait(5000);
     });
 });
 
@@ -41,3 +43,39 @@ function wait(ms){
   }
 }
 
+function checkResponsiveness(url) {
+  var self = this,
+      all = url.split(/\/(.+)/)
+      host = url.split(/\/(.+)/)[0],
+      path = url.split(/\/(.+)/)[1];
+
+  host = host.replace('/','');
+  console.log(all);
+  var options = {
+    host: host,
+    port: 80,
+    path: path,
+  };
+  var content = "";
+  return new Promise(function(resolve, reject) {
+    var req = http.request(options, function(response) {
+          if (response.statusCode < 200 || response.statusCode > 299) {
+            reject(new Error('Failed to load page, status code: ' + response.statusCode));
+          }
+          response.setEncoding("utf8");
+          response.on("data", function (chunk) {
+              content += chunk;
+            });
+          response.on("end", function () {
+            usingFrameworks = lookforCssFrameworks(content);
+            resolve(usingFrameworks ? 'RESPONSIVE' : 'NOT RESPONSIVE');
+          });
+        });
+    req.end();
+  });
+}
+
+function lookforCssFrameworks(content) {
+  var regex = /bootstrap|materialize/g;
+  return regex.test(content) ? true : false; 
+}
