@@ -3,9 +3,12 @@ var auth = require('./auth.js');
 var crawler = require('./crawler.js');
 var _ = require('lodash');
 var searchconsole = google.searchconsole('v1');
+var request = require('request');
 
 var API_KEY = auth.getApiKey();
 var urls = crawler.getAdUrls(process.argv[2]);
+//var urls = crawler.getAdUrls('mudanzas');
+
 
 urls.then(function (urls) {
     _.forEach(urls, function(value) {
@@ -17,19 +20,15 @@ urls.then(function (urls) {
 });
 
 function responsiveFilter(url) {
+  var regex = /bootstrap|materialize/g;
   return new Promise(function(resolve, reject) {
-    searchconsole.urlTestingTools.mobileFriendlyTest.run({
-      auth: API_KEY,
-      url: 'https://' + url
-    },
-      function (error,result) {
-        if(result != null) {
-          resolve(url +' - ' + result.mobileFriendliness);
-        } else {
-          console.log(url + '- Test error: ' + error);
-        }
-      }  
-    );
+    url = url.split('/')[0];
+    request('http://'+url, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+          var result = (regex.exec(body) !== null) ? 'Responsive' : 'Not responsive';
+          resolve(url + ' - '+ result);
+       }
+    })
   });
 }
 
